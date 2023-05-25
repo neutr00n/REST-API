@@ -8,7 +8,7 @@ const {
 
 const { ctrlWrapper, HttpError } = require("../helpers/index");
 
-const { addSchema, putSchema } = require("../schemas/contacts");
+const { addSchema } = require("../schemas/contacts");
 
 const getAllContacts = async (req, res) => {
   const allContacts = await listContacts();
@@ -30,7 +30,8 @@ const addCont = async (req, res) => {
   const { error } = addSchema.validate(req.body);
 
   if (error) {
-    throw HttpError(400, "missing required name field");
+    const { path } = error.details[0];
+    throw HttpError(400, `missing required ${path} field`);
   }
 
   const contact = await addContact(req.body);
@@ -49,10 +50,16 @@ const removeCont = async (req, res) => {
 };
 
 const apdateContById = async (req, res) => {
-  const { error } = putSchema.validate(req.body);
+  const { error } = addSchema.validate(req.body);
+  const isEmpty = Object.keys(req.body).length;
+
+  if (isEmpty === 0) {
+    throw HttpError(400, "missing fields");
+  }
 
   if (error) {
-    throw HttpError(400, "missing fields");
+    const { path } = error.details[0];
+    throw HttpError(400, `missing required ${path} field`);
   }
 
   const { contactId } = req.params;

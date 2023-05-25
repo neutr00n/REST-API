@@ -6,10 +6,4 @@ const addSchema = Joi.object({
   phone: Joi.string().required(),
 });
 
-const putSchema = Joi.object({
-  name: Joi.string(),
-  email: Joi.string(),
-  phone: Joi.string(),
-}).or("name", "email", "phone");
-
-module.exports = { addSchema, putSchema };
+module.exports = { addSchema };
