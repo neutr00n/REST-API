@@ -1,22 +1,16 @@
-const {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  apdateById,
-} = require("../models/contacts");
+const Contact = require("../models/contact");
 
 const { ctrlWrapper, HttpError } = require("../helpers/index");
 
 const getAllContacts = async (req, res) => {
-  const allContacts = await listContacts();
+  const allContacts = await Contact.find();
   res.status(200).json(allContacts);
 };
 
 const getContById = async (req, res) => {
   const { contactId } = req.params;
 
-  const contact = await getContactById(contactId);
+  const contact = await Contact.findById(contactId);
 
   if (!contact) {
     throw HttpError(404, "Not found");
@@ -25,14 +19,14 @@ const getContById = async (req, res) => {
 };
 
 const addCont = async (req, res) => {
-  const contact = await addContact(req.body);
+  const contact = await Contact.create(req.body);
 
   res.status(201).json(contact);
 };
 
 const removeCont = async (req, res) => {
   const { contactId } = req.params;
-  const contact = await removeContact(contactId);
+  const contact = await Contact.findByIdAndRemove(contactId);
 
   if (!contact) {
     throw HttpError(404, "Not found");
@@ -42,8 +36,22 @@ const removeCont = async (req, res) => {
 
 const updateContById = async (req, res) => {
   const { contactId } = req.params;
+  const contact = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
 
-  const contact = await apdateById(contactId, req.body);
+  if (!contact) {
+    throw HttpError(404, "Not found");
+  }
+
+  res.status(200).json(contact);
+};
+
+const updateStatusContact = async (req, res) => {
+  const { contactId } = req.params;
+  const contact = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
 
   if (!contact) {
     throw HttpError(404, "Not found");
@@ -58,4 +66,5 @@ module.exports = {
   addCont: ctrlWrapper(addCont),
   removeCont: ctrlWrapper(removeCont),
   updateContById: ctrlWrapper(updateContById),
+  updateStatusContact: ctrlWrapper(updateStatusContact),
 };
