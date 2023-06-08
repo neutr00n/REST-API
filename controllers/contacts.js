@@ -3,7 +3,21 @@ const Contact = require("../models/contact");
 const { ctrlWrapper, HttpError } = require("../helpers/index");
 
 const getAllContacts = async (req, res) => {
-  const allContacts = await Contact.find();
+  const { _id: owner } = req.user;
+  const { page = 1, limit = 5, favorite } = req.query;
+  const skip = (page - 1) * limit;
+
+  const query = { owner };
+
+  if (favorite !== undefined) {
+    query.favorite = favorite;
+  }
+
+  const allContacts = await Contact.find(query, "", {
+    skip,
+    limit,
+  });
+
   res.status(200).json(allContacts);
 };
 
@@ -19,7 +33,8 @@ const getContById = async (req, res) => {
 };
 
 const addCont = async (req, res) => {
-  const contact = await Contact.create(req.body);
+  const { _id: owner } = req.user;
+  const contact = await Contact.create({ ...req.body, owner });
 
   res.status(201).json(contact);
 };

@@ -46,4 +46,22 @@ const validateFavorite = (schema) => {
   return func;
 };
 
-module.exports = { validateAddBody, validateUpdateBody, validateFavorite };
+const validateAuth = (schema) => {
+  const func = (req, res, next) => {
+    const { error } = schema.validate(req.body);
+
+    if (error) {
+      throw HttpError(400, error.message);
+    }
+    next();
+  };
+
+  return func;
+};
+
+module.exports = {
+  validateAddBody,
+  validateUpdateBody,
+  validateFavorite,
+  validateAuth,
+};
