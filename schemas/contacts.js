@@ -7,8 +7,6 @@ const addSchema = Joi.object({
   favorite: Joi.boolean(),
 });
 
-module.exports = { addSchema };
-
 const favoriteSchema = Joi.object({
   favorite: Joi.boolean().required(),
 });
